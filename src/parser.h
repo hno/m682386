@@ -6,7 +6,7 @@
 #endif
 
 #ifndef M682386_H
-#include "M682386.h"
+#include "m682386.h"
 #endif /* 682386_H */
 
 #define PARSE_ERROR_SIZE    (120)
