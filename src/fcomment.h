@@ -1,7 +1,7 @@
 #ifndef FCOMMENT_H
 #define FCOMMENT_H
 
-/* Include fil till dotLabel */
+/* dotLabel */
 
 #include "exp68000.h"
 typedef EXP68000 FCOMMENT;

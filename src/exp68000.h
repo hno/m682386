@@ -1,8 +1,8 @@
 #ifndef EXP68000_H
 #define EXP68000_H
-/* strukturer och prototyper till exp68000 steget
+/* definitions for exp68000
 **
-** exp68000 expanderar 68000 instruktionerna med flagginfo
+** exp68000 expands 68000 instructions with flag info
 */
 
 #ifndef M682386_H

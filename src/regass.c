@@ -79,7 +79,7 @@ static OUTPUT out[MAX_OUTPUT];
 static int nitems=0;
 static int curritem=0;
 
-void output(OUTPUT *);
+static void output(OUTPUT *);
 
 /* L„gg till ett element i ouput k”n */
 static void output(OUTPUT *elem)
@@ -696,6 +696,8 @@ static void doSpecialMul(INPUT *in)
 		break;
 	case INSTR86_IMUL:/* Signed */
 		out.data.instr.instr=INSTR86_MOVSX;
+		break;
+	default:
 		break;
 	}
 

@@ -27,7 +27,7 @@
 #define TEST_MATCH86				0
 #define GENERATE					1
 
-extern unsigned _stklen=10000;
+unsigned _stklen=10000;
 
 /* objectName
 ** ett namn som anv„nds f”r automat generarade labels, och annat

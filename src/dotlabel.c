@@ -1,5 +1,6 @@
-/* fixa lokala labels, och diverse operatorer s†som | & << >>
-*/
+/* 
+ * local labels, and operators like | & << >>
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,14 +11,13 @@
 #include "exp68000.h"
 #include "dotlabel.h"
 
-/* Varifr†n f†r vi v†r input? */
 #include "numbers.h"
 #define READER numbers
 typedef NUMBERS INPUT;
 typedef DOTLABEL OUTPUT;
 
 /* En idiot initiering, bara utifall att.... (den funkar.) */
-static char fullLabel[256]="lokal_utan_foregangare";
+static char fullLabel[256]="local_label_with_no_parent";
 
 static void fixup(char *str,int macro)
 {
@@ -29,7 +29,7 @@ static void fixup(char *str,int macro)
 		str[0]=0;
 		for(ptr=tmp;*ptr;ptr+=strcspn(ptr,".")) {
 			if(*ptr=='.') ptr++;
-			if(ptr!=tmp && ptr!=tmp+1 && !isalnum(ptr[-2]) || ptr==tmp+1) {
+			if((ptr!=tmp && ptr!=tmp+1 && !isalnum(ptr[-2])) || (ptr==tmp+1)) {
 				strcat(str,fullLabel);
 				strcat(str,"@@");
 			} else {
@@ -51,7 +51,7 @@ static void fixup(char *str,int macro)
 		}
 	}
 
-	/* Ers„tt * med $ p† beh”vliga st„llen */
+	/* Replace * with $ where needed */
 	for(part=strchr(str,'*');part!=NULL;part=strchr(part+1,'*')) {
 		if(part==str || ispunct(part[-1]) || ispunct(part[1]))
 			part[0]='$';
@@ -117,7 +117,7 @@ static void fixup(char *str,int macro)
 	}
 }
 
-/* Fixa dot labels */
+/* Handle dot labels */
 OUTPUT *dotLabel(void)
 {
 	INPUT *in;
@@ -131,9 +131,9 @@ OUTPUT *dotLabel(void)
 		case '.':
 			fixup(in->data.label.text,0);
 			break;
-		case '_': /* Det „r en knasig label... skit i den. */
+		case '_': /* Ignore underscore labels */
 			break;
-		default:	/* Det „r en full label */
+		default:	/* This is a full label */
 			fixup(in->data.label.text,0);
 			strcpy(fullLabel,in->data.label.text);
 			break;
@@ -142,11 +142,13 @@ OUTPUT *dotLabel(void)
 	case IS_INSTR:
 		if(in->data.instr.opsMode==O_SPECIAL)
 			break;
-		/* Leta efter anv„ndning av labels */
+		/* Search for label usage */
 		/* Operand 1 */
 		fixup(in->data.instr.op1.constant.text,in->data.instr.op1.mode==OP_MACRO);
 		/* Operand 2 */
 		fixup(in->data.instr.op2.constant.text,in->data.instr.op2.mode==OP_MACRO);
+		break;
+	default:
 		break;
 	}
 	return in;

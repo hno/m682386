@@ -33,7 +33,7 @@ static OUTPUT out[MAX_OUTPUT];
 static int nitems=0;
 static int curritem=0;
 
-void output(OUTPUT *);
+static void output(OUTPUT *);
 
 /* L„gg till ett element i ouput k”n */
 static void output(OUTPUT *elem)
@@ -101,6 +101,8 @@ static void genAdd(INPUT *in,REGISTER reg,SIZE size)
 			break;
 		case -1:
 			size=-2;
+			break;
+		default:
 			break;
 		}
 	}
@@ -180,6 +182,8 @@ static OPERAND cleanOp(OPERAND op)
 		op.addrMode=AM_INDIRECT;
 		op.index=REG_NONE;
 		break;
+	default:
+		break;
 	}
 	return op;
 }
@@ -213,6 +217,8 @@ static OPERAND getOp(INPUT *in,OPERAND op)
 		case AM_NO_OPERAND:
 		case AM_REG:
 			return cleanOp(op);
+		default:
+			break;
 		}
 		break;
 	}
@@ -220,6 +226,8 @@ static OPERAND getOp(INPUT *in,OPERAND op)
 	switch(op.mode) {
 	case OP_FLOW:
 		return op;
+	default:
+		break;
 	}
 
 	/* Nehepp.. m†ste g† via tempor„rregister */

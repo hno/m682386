@@ -16,30 +16,29 @@
 #include "regass.h"
 #include "generate.h"
 
-/* Varifr†n kommer input? */
 #define READER regAss
 typedef REGASS INPUT;
 
-/* Lite statistik... */
+/* Some statistics... */
 static long sourceLines=0;
 static long instruktions=0;
 static long labels=0;
 static long errors=0;
 static long comments=0;
 
-/* eol kommentar */
+/* eol comments */
 static COMMENT eolComment;
 
-/* Det finns en label p† denna rad */
+/* there is a label on this line */
 int labelOnLine;
 
-/* Hit g†r output */
+/* Where to send output */
 static FILE *out;
 
-/* Genererings flaggor */
+/* Ouput flags */
 static GENOPTIONS opt;
 
-/* Senaste source raden, att tas med vid ev error */
+/* last input line, used on errors */
 static SOURCE_LINE sourceLine;
 
 static char *getInstr86Text(INSTRCODE86 instr)
@@ -100,21 +99,21 @@ static char *flaggOptErrorDescr[]={
 };
 
 static char *opsModeDescr[]={
-	"O_UNKNOWN",/* Ok„nd... */
-	"O_SPECIAL",/* Special special (hmm... inte vet jag) */
-	"O_NONE",	/* Inga operander */
-	"O_NORMAL",	/* Tv† operander: k„lla",destination */
-	"O_SRC",		/* Operanden „r k„lla */
-	"O_DST",		/* Operanden „r destination */
-	"O_MOD",		/* Operanden modifieras */
-	"O_MOD2",	/* Operanderna modifieras */
-	"O_MDST",	/* Destinations operanden modifieras */
-	"O_MDST1",	/* En till tv† operander", dest modifieras */
-	"O_FLOW",	/* En operand som „r label */
-	"O_FLOW2",	/* register,label (DBcc) */
-	"O_CHECK",	/* Tv† k„ll operander */
-	"O_DATA",	/* Data. 1...n */
-	"O_MACRO",	/* Macro. 1...n */
+	"O_UNKNOWN",
+	"O_SPECIAL",
+	"O_NONE",
+	"O_NORMAL",
+	"O_SRC",
+	"O_DST",
+	"O_MOD",
+	"O_MOD2",
+	"O_MDST",
+	"O_MDST1",
+	"O_FLOW",
+	"O_FLOW2",
+	"O_CHECK",
+	"O_DATA",
+	"O_MACRO",
 };
 
 static char *opModeDescr[]={
@@ -274,7 +273,7 @@ static int eprintf(FILE *out,char *fmt,...)
 static char *getOp(OPERAND op)
 {
 	static char out[256];
-	/* OP_FLOW med AM_ABS_MEM skall inte ha klamrar... */
+	/* OP_FLOW on AM_ABS_MEM should not use brakets */
 	switch(op.addrMode) {
 	case AM_REG:
 		sprintf(out,"%s",getReg(op.reg,op.size));
@@ -295,7 +294,7 @@ static char *getOp(OPERAND op)
 		break;
 	case AM_ABS_MEM:
 		switch(op.mode) {
-		case OP_FLOW: /* FLOW har ingen size eller klamrar */
+		case OP_FLOW: /* FLOW does not use size or brakets  */
 			sprintf(out,"%s",op.constant.text);
 			break;
 		default:
@@ -350,6 +349,8 @@ static void genInstr(INSTR86 instr)
 		case INSTR86_RSTRUCD:
 			instr.instr=INSTR86_DD;
 			break;
+		default:
+			break;
 		}
 		if(strcmp(instr.op1.constant.text,"0")!=0) {
 			fprintf(out,"\t%-4s %s %s (?)"
@@ -365,6 +366,8 @@ static void genInstr(INSTR86 instr)
 				break;
 			case INSTR86_DD:
 				fprintf(out,"\tLABEL DWORD");
+				break;
+			default:
 				break;
 			}
 		}

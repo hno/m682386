@@ -231,7 +231,7 @@ static OUTPUT out[MAX_OUTPUT];
 static int nitems=0;
 static int curritem=0;
 
-void output(OUTPUT *);
+static void output(OUTPUT *);
 
 /* L„gg till ett element i ouput k”n */
 static void output(OUTPUT *elem)
@@ -357,7 +357,7 @@ static void newInstr(INPUT *in,INSTRCODE86 instr,OPERAND *op1,OPERAND *op2,INSTR
 	INFO86 *info;
 	INFO86 unknown;
 
-	FLAGMASK set,used,preserved;
+	FLAGMASK set, used, preserved;
 
 	/* T”m n”dv„ndniga strukturer */
 	memset(&new,0,sizeof(new));
@@ -405,6 +405,11 @@ static void newInstr(INPUT *in,INSTRCODE86 instr,OPERAND *op1,OPERAND *op2,INSTR
 		set=0;
 		used=0;
 		preserved=0;
+		break;
+	default:
+		set=in->flagsSet;
+		used=in->flagsUsed;
+		preserved=in->flagsPreserved;
 		break;
 	}
 

@@ -1,9 +1,5 @@
 /* flaggopt
-** rensa bort lite onodig flagginfo.....
-**
-**
-** l„s tills n†gon beh”ver flaggor, s”k tillbaks till vem som
-** beh”vde och radera bort all annan flagginfo
+** clean up unused flag info
 */
 
 #include <stdlib.h>
@@ -14,37 +10,36 @@
 #include "flaggopt.h"
 
 /******************************/
-/* Varifr†n f†r vi v†r input? */
+/* our locaion in the processing chain */
 #include "opmodes.h"
 #define READER opModes
 typedef OPMODES INPUT;
-/* Vad har vi f”r output? */
 typedef FLAGGOPT OUTPUT;
 /******************************/
 
-#define MAX_WORK_ARRAY 130  /* Max element inom ett arbetsomrade som vi kan hantera */
+#define MAX_WORK_ARRAY 130  /* Maximum window size to process */
 
-/* arbets array */
+/* processing window/area */
 static OUTPUT work[MAX_WORK_ARRAY];
-static int realelem=0; /* verkligt antal element i arrayen */
-static int nelem=0; /* antal element som arbetas p† i arrayen */
-static int currelem=0; /* aktuellt element i arrayen */
-static FLAGMASK flagsNotSet=0; /* Flaggor som ej „r satta f”r blocket */
-static int flagsNotSetLine;	/* Vid vilken rad flaggorna f”rst”rs */
-/* h„mta data tills n„sta instruktion som p†verkar alla flaggor */
+static int realelem=0; 
+static int nelem=0;
+static int currelem=0;
+static FLAGMASK flagsNotSet=0; /* flags not yet set */
+static int flagsNotSetLine;	/* where the flags are destroyed */
+
+/* get data up to next instruction modifying all flags  */
 static void getdata(void)
 {
 	INPUT *in;
 
-	/* flytta kvarvarande antal element */
+	/* move remaining elements */
 	for(nelem=0;nelem<realelem-currelem;nelem++)
 		work[nelem]=work[currelem+nelem];
 
-	/* fixa currelem och realelem efter nya f”rh†llanden */
 	currelem=0;
 	realelem=nelem;
 
-	/* l„s in nya element */
+	/* read in more elements */
 	do {
 		in=READER();
 		if(!in)
@@ -58,7 +53,6 @@ static void getdata(void)
 		}
 	} while((in->flagsSet|(F_ALL & ~in->flagsPreserved))!=F_ALL);
 
-	/* klart.. s„tt antal element i arrayen */
 	if(realelem>1)
 		nelem=realelem-1;
 	else
@@ -66,7 +60,7 @@ done:
 		nelem=realelem;
 }
 
-/* doflaggopt: optimera bort onodiga flaggor */
+/* doflaggopt: remove unused flags */
 static void doflaggopt(void)
 {
 	int pos;
@@ -75,44 +69,43 @@ static void doflaggopt(void)
 	if(!nelem)
 		return;
 
-	/* Inga flaggor behovs efter blocket */
+	/* No flags needed after the block */
 	if(nelem<realelem)
-		/* Utifall att n†got som p†verkar alla flaggor
-		** skulle beh”va n†gra flaggor
+		/* In case something which sets all flags
+		** should need some flags as input
 		*/
 		used=work[nelem].flagsUsed;
 	else
 		used=0;
 
+	/* scan the current block bottom-up starting with the last instruction */
 	for(pos=nelem-1;pos>=0;pos--) {
-		/* Flaggor som inte beh”vs „r inte intressanta */
+		/* Flags not needed are not interesting */
 		work[pos].flagsSet &= used;
 
-		/* De flaggor som s„tts beh”vs inte s„ttas tidigare*/
+		/* Flags being set does not need to be set earlier */
 		used &= ~work[pos].flagsSet;
 
-		/* De flaggor som beh”vs och inte bibeh†lls „r skumma */
+		/* Flags used but not preserved are odd.. */
 		if(used & ~work[pos].flagsPreserved) {
 			flagsNotSet|=used & ~work[pos].flagsPreserved;
 			flagsNotSetLine=work[pos].lineNumber;
 		}
 
-		/* Endast de flaggor som bibeh†lls av denna instruktion
-		** „r n†gon ide att leta vidare efter
+		/* The search only needs to continue for those
+		** flags which are preserved.
 		*/
 		used &= work[pos].flagsPreserved;
 
-		/* Endast de flaggor som fortfarande beh”vs „r n†gon ide
-		** att bibeh†lla
+		/* Only flags needed are interestning to keep
 		*/
 		work[pos].flagsPreserved &= used;
 
-		/* Flaggor som beh”vs beh”vs.... */
+		/* Flags used are needed */
 		used |= work[pos].flagsUsed;
 	}
 }
 
-/* Generera en error struktur */
 OUTPUT errorFlagsNotSet(FLAGMASK flags)
 {
 	OUTPUT out;
@@ -124,15 +117,15 @@ OUTPUT errorFlagsNotSet(FLAGMASK flags)
 	return out;
 }
 
-/* H„mta upp n„sta element ur arrayen, „r det tomt generera nya */
+/* Send output to the next step */
 OUTPUT *flaggopt(void)
 {
-	/* generera nytt om det beh”vs */
+	/* generate more elements */
 	if(currelem>=nelem) {
 		doflaggopt();
 	}
 
-	/* Generera varning f”r osatta flaggor */
+	/* warn about flags we failed to find the source for */
 	if(flagsNotSet) {
 		static OUTPUT ret;
 		ret=errorFlagsNotSet(flagsNotSet);
@@ -140,10 +133,9 @@ OUTPUT *flaggopt(void)
 		return &ret;
 	}
 
-	/* vid EOF returnera NULL */
+	/* EOF */
 	if(currelem>=nelem)
 		return NULL;
 
-	/* returnera aktuellt element */
 	return &work[currelem++];
 }

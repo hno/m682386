@@ -28,7 +28,7 @@ typedef struct {
 	char fileName[256];
 } PARSER_STATE;
 
-#define NO_PARSE_NEEDED(a) (a > NO_PARSE_NEEDED_START && a < NO_PARSE_NEEDED_END || a == INSTR68_MACRO_USE)
+#define NO_PARSE_NEEDED(a) ((a > NO_PARSE_NEEDED_START && a < NO_PARSE_NEEDED_END) || (a == INSTR68_MACRO_USE))
 
 typedef struct {
 	char source[SOURCE_LINE_SIZE];

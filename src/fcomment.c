@@ -1,6 +1,6 @@
-/* Fixa kommentarer
-** flytta EOL kommentarer till f”re ev instruktion
-*/
+/* Fixup comments by moving EOL comments to the line
+ * ahead of the instruction
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,14 +11,14 @@
 
 #define MAX_OUTPUT 3
 
-/* Varifr†n f†r vi v†r input? */
+/* Our location in the processing chain */
 #define READER exp68000
 typedef EXP68000 INPUT;
 typedef FCOMMENT OUTPUT;
 
 #define MAX_ACTIVE 3
 
-/* Flytta EOL kommentarer */
+/* Move EOL comments. Look-ahead one step */
 
 static OUTPUT *fixComment1(void)
 {
@@ -37,7 +37,6 @@ static OUTPUT *fixComment1(void)
 		in=*p1;
 	}
 
-	/* Standard retur v„rdet */
 	ret=in;
 
 	p2=READER();
@@ -46,20 +45,19 @@ static OUTPUT *fixComment1(void)
 	}
 	in2=*p2;
 
-	/* standard n„sta „r i samma ordning som fr†n b”rjan */
+	/* default is to keep the order */
 	last=in2;
 	lastfinns=1;
 
 	if(in2.type==IS_COMMENT_EOL) {
 		switch(in.type) {
-		/* Det „r en EOL kommentar som skall f”rflyttas ... */
 		case IS_INSTR:
-			/* returnera in2, och sparar in f”r framtiden */
+			/* this comment needs to be moved */
 			last=in;
 			ret=in2;
 			break;
-		/* Kommentaren skulle inte f”rflyttas. */
 		default:
+			/* no change needed */
 			break;
 		}
 	}
@@ -87,7 +85,6 @@ OUTPUT *fixComment(void)
 		in=*p1;
 	}
 
-	/* Standard retur v„rdet */
 	ret=in;
 
 	p2=READER();
@@ -96,20 +93,19 @@ OUTPUT *fixComment(void)
 	}
 	in2=*p2;
 
-	/* standard n„sta „r i samma ordning som fr†n b”rjan */
+	/* default to the same order */
 	last=in2;
 	lastfinns=1;
 
 	if(in2.type==IS_COMMENT_EOL) {
 		switch(in.type) {
-		/* Det „r en EOL kommentar som skall f”rflyttas ... */
 		case IS_LABEL:
-			/* returnera in2, och sparar in f”r framtiden */
+			/* move comment */
 			last=in;
 			ret=in2;
 			break;
-		/* Kommentaren skulle inte f”rflyttas. */
 		default:
+			/* no change */
 			break;
 		}
 	}

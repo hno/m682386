@@ -15,7 +15,7 @@ typedef struct {
 	FLAGMASK flags;
 } FLAGGOPT_ERROR;
 
-/* flaggoptimerad instruktion */
+/* flag optimized instruction */
 typedef struct {
 	STRUCT_TYPE type;
 	LINENUMBER lineNumber;
@@ -30,7 +30,6 @@ typedef struct {
 } FLAGGOPT;
 
 
-/* prototyp till flaggopt */
 FLAGGOPT *flaggopt(void);
 
 #endif /* FLAGGOPT_H */
