@@ -806,7 +806,7 @@ static int include(INPUT *in,TABLE *info)
 	ptr=in->data.instr.op1.constant.text;
 
 	/* Fixa "PRJ:" */
-	if(strnicmp(ptr,"PRJ:",4)==0) {
+	if(strncasecmp(ptr,"PRJ:",4)==0) {
 		strcat(name.text,"\\");
 		ptr+=4;
 	}
@@ -819,7 +819,7 @@ static int include(INPUT *in,TABLE *info)
 	/* .bin -> .bpc */
 	if(strlen(name.text)>=4)
 		ptr=&name.text[strlen(name.text)-4];
-		if(stricmp(ptr,".bin")==0)
+		if(strcasecmp(ptr,".bin")==0)
 			strcpy(ptr,".bpc");
 
 	/* / -> \ */

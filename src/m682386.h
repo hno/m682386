@@ -4,6 +4,11 @@
 /* FLAGMASK anv„nds i i80306.h */
 typedef unsigned char FLAGMASK;
 
+#undef max
+#define max(a,b)	(a > b ? a : b);
+#undef min
+#define min(a,b)	(a < b ? a : b);
+
 #ifndef M68000_H
 #include "m68000.h"
 #endif

@@ -332,10 +332,10 @@ static REGISTER decodeReg(char *reg)
 				return REG_D0+reg[1]-'0';
 		}
 	}
-	if(stricmp(reg,"PC")==0) return REG_PC;
-	if(stricmp(reg,"SP")==0) return REG_SP;
-	if(stricmp(reg,"CCR")==0) return REG_CCR;
-	return NULL;
+	if(strcasecmp(reg,"PC")==0) return REG_PC;
+	if(strcasecmp(reg,"SP")==0) return REG_SP;
+	if(strcasecmp(reg,"CCR")==0) return REG_CCR;
+	return REG_NONE;
 }
 
 /* decodeReg2
@@ -759,7 +759,7 @@ static INSTRCODE68 decodeInstr(char *instr)
 	struct instrName *n;
 
 	for(n=instrtab;n->code!=INSTR68_UNKNOWN;n++) {
-		if(stricmp(n->name,instr)==0) {
+		if(strcasecmp(n->name,instr)==0) {
 			return n->code;
 		}
 	}
