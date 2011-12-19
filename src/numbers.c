@@ -57,6 +57,9 @@ OUTPUT *numbers(void)
 
 	in=READER();
 
+	if (!in)
+		return NULL;
+
 	switch(in->type) {
 	case IS_INSTR:
 		fixNumbers(in->data.instr.op1.constant.text);
