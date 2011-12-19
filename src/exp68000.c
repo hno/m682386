@@ -503,7 +503,7 @@ static void doSomeMore(void)
 			}
 		}
 		if(tab->funk)
-			(EXPFUNK *)(tab->funk)(&exp,&exp.data.instr);
+			tab->funk(&exp,&exp.data.instr);
 		fixOperands(in,&exp);
 		break;
 	case IS_LABEL:

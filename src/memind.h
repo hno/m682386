@@ -8,4 +8,4 @@ typedef MULTIREG MEMIND;
 
 MEMIND *memIndirect(void);
 
-#endif MEMIND_H
+#endif /* MEMIND_H */

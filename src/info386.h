@@ -16,7 +16,7 @@ typedef struct {
 
 #ifdef F_ALL
 #undef F_ALL
-#endif F_ALL
+#endif /* F_ALL */
 #define F_ALL (F_N | F_Z | F_V | F_C)
 
 INFO86 *info386(INSTRCODE86);

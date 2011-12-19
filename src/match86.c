@@ -368,7 +368,7 @@ static void newInstr(INPUT *in,INSTRCODE86 instr,OPERAND *op1,OPERAND *op2,INSTR
 
 	/* Leta reda p† information om instruktionen */
 	info=info386(instr);
-	if(!info || info->opsMode==OP_UNKNOWN) {
+	if(!info || (info->opsMode==O_UNKNOWN)) {
 		errorInfo86(in,instr);
 		memset(&unknown,0,sizeof(INFO86));
 		info=&unknown;

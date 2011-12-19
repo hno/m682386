@@ -8,4 +8,4 @@ typedef EXP68000 OPMODES;
 
 OPMODES *opModes(void);
 
-#endif OPMODES_H
+#endif /* OPMODES_H */
